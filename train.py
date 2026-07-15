@@ -11,7 +11,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from config import cfg
-from data.grain_dataset import GrainDataset
+from data.dataset_loader import SegDataset
 from data.transforms import get_train_transform, get_val_transform
 from models.dinov3_segmentation import DINOv3Seg
 from losses.loss import TotalLoss
@@ -102,12 +102,12 @@ def main():
     # ======================
     # Dataset
     # ======================
-    train_dataset = GrainDataset(
+    train_dataset = SegDataset(
         cfg.train_image_dir, cfg.train_mask_dir,
         transform=get_train_transform(), is_train=True,
         image_size=cfg.image_size
     )
-    val_dataset = GrainDataset(
+    val_dataset = SegDataset(
         cfg.val_image_dir, cfg.val_mask_dir,
         transform=get_val_transform(), is_train=False,
         image_size=cfg.image_size

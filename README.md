@@ -90,7 +90,7 @@
 
 ```
 ├── datasets/
-│   ├── grain_dataset.py      # 数据集加载（训练/验证/测试/无标注）
+│   ├── dataset_loader.py      # 数据集加载（训练/验证/测试/无标注）
 │   └── transforms.py         # 数据增强（Albumentations）
 │
 ├── models/
@@ -213,7 +213,7 @@ python infer.py
 python export_onnx.py
 ```
 
-导出为 `./onnx/grain_boundary.onnx`，支持动态 batch size 和输入尺寸，可直接部署到 Triton Inference Server 或其他 ONNX Runtime 环境。
+导出为 `./onnx/model.onnx`，支持动态 batch size 和输入尺寸，可直接部署到 Triton Inference Server 或其他 ONNX Runtime 环境。
 
 ---
 
@@ -306,7 +306,7 @@ Epoch 5-79:  cosine decay (lr → min_lr)
 | `amp` | `True` | 混合精度训练 |
 | `crop_size` | `768` | 滑窗推理窗口大小 |
 | `stride` | `512` | 滑窗步长 |
-| `onnx_path` | `"./onnx/grain_boundary.onnx"` | ONNX 导出路径 |
+| `onnx_path` | `"./onnx/model.onnx"` | ONNX 导出路径 |
 
 ---
 

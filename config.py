@@ -129,7 +129,7 @@ class Config:
     # ===========================
     # ONNX Export
     # ===========================
-    onnx_path: str = "./onnx/grain_boundary.onnx"
+    onnx_path: str = "./onnx/model.onnx"
 
     # ===========================
     # Output

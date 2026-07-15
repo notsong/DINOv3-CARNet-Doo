@@ -1,5 +1,5 @@
 """
-datasets/grain_dataset.py
+datasets/dataset_loader.py
 
 工业边缘数据集
 适配 JLD 数据集：images=.jpg, masks=.png, mask像素0/1
@@ -12,7 +12,7 @@ from torch.utils.data import Dataset
 from data.transforms import letterbox_resize
 
 
-class GrainDataset(Dataset):
+class SegDataset(Dataset):
     def __init__(self, image_dir, mask_dir=None, transform=None, is_train=True,
                  image_size=1024):
         self.image_dir = image_dir
