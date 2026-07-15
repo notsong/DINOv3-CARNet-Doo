@@ -13,7 +13,7 @@ import torch
 def colorize_mask(mask):
     """
     0=背景
-    1=晶界
+    1=边缘
     """
 
     color = np.zeros((mask.shape[0], mask.shape[1], 3), dtype=np.uint8)

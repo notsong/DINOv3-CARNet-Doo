@@ -2,7 +2,7 @@
 data/transforms.py
 
 数据增强（Albumentations）
-针对晶界分割优化：几何/颜色增强 → Normalize
+针对边缘分割优化：几何/颜色增强 → Normalize
 （Letterbox 在 Dataset 中完成，transforms 仅做增强）
 """
 import cv2
@@ -75,7 +75,7 @@ def get_train_transform():
             p=0.5
         ),
 
-        # 弹性变形模拟金相图像畸变
+        # 弹性变形模拟工业图像畸变
         A.ElasticTransform(
             alpha=1,
             sigma=20,

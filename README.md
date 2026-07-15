@@ -1,6 +1,6 @@
-# DINOv3 + FPN-UNet：金相晶界语义分割
+# DINOv3 + FPN-UNet：工业边缘语义分割
 
-基于 **DINOv3（ViT-B/16）** 作为特征提取骨干，结合 **FPN + UNet 混合解码器** 的工业级晶界分割方案。专为金相显微图像的晶界（grain boundary）检测设计，支持训练、推理、ONNX 导出全流程。
+基于 **DINOv3（ViT-B/16）** 作为特征提取骨干，结合 **FPN + UNet 混合解码器** 的工业级边缘分割方案。专为工业图像的目标边缘检测设计，支持训练、推理、ONNX 导出全流程。
 
 ---
 
@@ -30,13 +30,13 @@
 
 ## 项目背景
 
-金相分析中，晶界（grain boundary）的自动提取是材料科学的关键任务。晶界具有以下特点：
+工业检测中，目标边缘的自动提取是材料科学的关键任务。边缘具有以下特点：
 
 - **细薄**：通常仅 1-3 像素宽，属于极端的细粒度分割
-- **拓扑连续**：晶界必须形成闭合回路才有物理意义
-- **尺度不一**：同一图像中晶粒大小差异可达数十倍
+- **拓扑连续**：边缘必须形成闭合回路才有物理意义
+- **尺度不一**：同一图像中目标大小差异可达数十倍
 
-传统图像处理方法（Canny、分水岭等）在噪声大、对比度低的工业场景下鲁棒性不足。本项目采用深度学习方案，利用 DINOv3 自监督预训练的强语义特征，配合边界感知损失，实现高精度晶界分割。
+传统图像处理方法（Canny、分水岭等）在噪声大、对比度低的工业场景下鲁棒性不足。本项目采用深度学习方案，利用 DINOv3 自监督预训练的强语义特征，配合边界感知损失，实现高精度边缘分割。
 
 ---
 
@@ -150,7 +150,7 @@ pip install torch torchvision transformers albumentations opencv-python numpy tq
 dataset/
 ├── train/
 │   ├── images/          # 训练原图 (.png/.jpg/.tif)
-│   └── masks/           # 训练标注 (灰度图，晶界=255，背景=0)
+│   └── masks/           # 训练标注 (灰度图，边缘=255，背景=0)
 ├── val/
 │   ├── images/          # 验证原图
 │   └── masks/           # 验证标注
@@ -225,9 +225,9 @@ python export_onnx.py
 
 | 层级 | 来源 | 下采样倍率 | 语义 |
 |------|------|-----------|------|
-| f4 | hidden_states[-3] | 4× | 低级纹理（晶界边缘细节） |
-| f8 | hidden_states[-2] | 8× | 中级结构（晶粒形状） |
-| f16 | hidden_states[-1] | 16× | 高级语义（晶粒区域） |
+| f4 | hidden_states[-3] | 4× | 低级纹理（目标边缘细节） |
+| f8 | hidden_states[-2] | 8× | 中级结构（目标形状） |
+| f16 | hidden_states[-1] | 16× | 高级语义（目标区域） |
 
 特征从 `[B, N, C]` (patch sequence) reshape 为 `[B, C, H, W]` 空间格式，丢弃 CLS token。默认冻结骨干网络，仅训练解码器，避免在小数据集上过拟合。
 
@@ -239,7 +239,7 @@ python export_onnx.py
 
 ### 损失函数：三合一组合 Loss
 
-针对晶界分割的特殊性，采用三种损失的加权组合：
+针对边缘分割的特殊性，采用三种损失的加权组合：
 
 ```
 Total Loss = 0.4 × BCE + 0.4 × Dice + 0.2 × Boundary
@@ -247,11 +247,11 @@ Total Loss = 0.4 × BCE + 0.4 × Dice + 0.2 × Boundary
 
 | 损失 | 作用 | 实现细节 |
 |------|------|---------|
-| **BCE Loss** | 像素级二分类监督 | `BCEWithLogitsLoss`，对 logits 的晶界通道 (channel=1) 计算 |
-| **Dice Loss** | 缓解类别不平衡（晶界像素占比极小） | Smooth Dice，加入 Laplace 平滑（eps=1） |
-| **Boundary Loss** | 强化晶界边缘连续性 | 用 Laplacian 核 `[[-1,-1,-1],[-1,8,-1],[-1,-1,-1]]` 提取预测与真值的边缘，计算 L1 Loss |
+| **BCE Loss** | 像素级二分类监督 | `BCEWithLogitsLoss`，对 logits 的边缘通道 (channel=1) 计算 |
+| **Dice Loss** | 缓解类别不平衡（边缘像素占比极小） | Smooth Dice，加入 Laplace 平滑（eps=1） |
+| **Boundary Loss** | 强化目标边缘连续性 | 用 Laplacian 核 `[[-1,-1,-1],[-1,8,-1],[-1,-1,-1]]` 提取预测与真值的边缘，计算 L1 Loss |
 
-> **为什么需要 Boundary Loss？** 晶界仅占图像像素的 1-3%，BCE + Dice 的组合倾向于给出模糊的边界预测。Boundary Loss 显式监督边缘梯度，迫使模型输出锐利、连续的晶界线。
+> **为什么需要 Boundary Loss？** 边缘仅占图像像素的 1-3%，BCE + Dice 的组合倾向于给出模糊的边界预测。Boundary Loss 显式监督边缘梯度，迫使模型输出锐利、连续的边缘线。
 
 ### 学习率调度：Warmup + Cosine
 
@@ -279,9 +279,9 @@ Epoch 5-79:  cosine decay (lr → min_lr)
 
 | 指标 | 说明 | 代码位置 |
 |------|------|---------|
-| **IoU (Jaccard)** | 逐类 IoU 的平均值（背景 + 晶界），评估整体分割质量 | [utils/metric.py](utils/metric.py) |
-| **Dice (F1)** | 晶界类的二值 Dice 系数，对细粒度目标更敏感 | [utils/metric.py](utils/metric.py) |
-| **Boundary F1** | 用 Laplacian 核提取边缘后计算 F1，评估晶界连续性 | [utils/metric.py](utils/metric.py) |
+| **IoU (Jaccard)** | 逐类 IoU 的平均值（背景 + 边缘），评估整体分割质量 | [utils/metric.py](utils/metric.py) |
+| **Dice (F1)** | 边缘类的二值 Dice 系数，对细粒度目标更敏感 | [utils/metric.py](utils/metric.py) |
+| **Boundary F1** | 用 Laplacian 核提取边缘后计算 F1，评估边缘连续性 | [utils/metric.py](utils/metric.py) |
 
 ---
 

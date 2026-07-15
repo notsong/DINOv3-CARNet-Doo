@@ -1,7 +1,7 @@
 """
 utils/metric.py
 
-语义分割评估指标（晶界专用）
+语义分割评估指标（边缘专用）
 """
 
 import torch
@@ -58,7 +58,7 @@ def dice_score(pred, target, eps=1e-6):
 def boundary_f1(pred, target, kernel_size=3):
     """
     简化边界F1（工业近似版本）
-    用于晶界连续性评估
+    用于边缘连续性评估
     """
 
     if pred.dim() == 4:

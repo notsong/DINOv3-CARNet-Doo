@@ -1,7 +1,7 @@
 """
 datasets/grain_dataset.py
 
-金相晶界数据集
+工业边缘数据集
 适配 JLD 数据集：images=.jpg, masks=.png, mask像素0/1
 """
 import os

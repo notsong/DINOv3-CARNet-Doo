@@ -3,7 +3,7 @@ models/boundary_head.py
 
 Boundary Head for DINOv3 Decoder V3
 
-用于晶界边缘辅助监督
+用于目标边缘辅助监督
 """
 
 import torch

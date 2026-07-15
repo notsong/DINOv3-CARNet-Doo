@@ -1,8 +1,8 @@
-# CLAUDE.md — DINOv3 + FPN-UNet 金相晶界语义分割
+# CLAUDE.md — DINOv3 + FPN-UNet 工业边缘语义分割
 
 ## 项目概述
 
-基于 DINOv3（ViT-B/16）作为特征提取骨干，结合 FPN + UNet 混合解码器的工业级晶界分割方案。专为金相显微图像的晶界（grain boundary）检测设计。
+基于 DINOv3（ViT-B/16）作为特征提取骨干，结合 FPN + UNet 混合解码器的工业级边缘分割方案。专为工业图像的目标边缘检测设计。
 
 ## 技术栈
 
@@ -86,7 +86,7 @@ D:/work/anaconda/envs/unet_pro/python -c "from config import cfg; print(cfg)"
 - **FP16** 全流程（模型 + 归一化常量都用 half）
 - **批量滑窗**: 所有窗口一次前向传播（非逐窗口循环）
 - 大图自动降采样 0.85× 以减少窗口数
-- 形态学闭运算后处理 (`cv2.MORPH_CLOSE`) 增强晶界连续性
+- 形态学闭运算后处理 (`cv2.MORPH_CLOSE`) 增强边缘连续性
 
 ## 编码约定
 
